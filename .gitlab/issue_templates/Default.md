@@ -2,7 +2,7 @@
 
 <!-- Everything formatted like this paragraph is a comment, these are intented for helping you write a more useful report. You can leave them in, they'll disappear after submitting -->
 
-* Affected xdg-utils command(s):
+* Affected xdg-utils:
 * xdg-utils version: 
 * Desktop environment:
 

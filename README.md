@@ -41,7 +41,6 @@ The following tools are included in xdg-utils 1.2:
 * `xdg-open` - Open a file or URL in the user's preferred application
 * `xdg-email` - Send mail using the user's preferred e-mail composer
 * `xdg-realpath` - Canonicalize filenames (new in 1.2)
-* `xdg-settings` - Configure and query default browser and URL-scheme handlers
 * `xdg-screensaver` - Control the screensaver
 
 
