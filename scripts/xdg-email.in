@@ -84,6 +84,7 @@ run_thunderbird()
     fi
 }
 
+# (mailto_uri)
 open_portal()
 {
     gdbus call --session \
@@ -99,7 +100,7 @@ open_portal()
     fi
 }
 
-# (mailto, attach)
+# (mailto_uri, attach)
 open_generic()
 {
     local client
@@ -114,18 +115,23 @@ open_generic()
     exit $?
 }
 
+# Takes text on stdin encoded in whatever iconv can recognize and spit out utf8
+to_utf8()
+{
+	if [ -n "$assume_utf8" ] ; then
+		cat
+	else
+		iconv -t utf8
+	fi
+}
+
+# URL encodes the given text to stdout
+#(text)
 url_encode()
 {
-# The shell needs the default internal field separator
-# otherwise it would search for $utf8 as a command in whole.
-IFS=" "
-str="$(echo "$1" | $utf8)"
-local ORIG_LANG ORIG_LC_ALL
-ORIG_LANG="$LANG"
-ORIG_LC_ALL="$LC_ALL"
-LANG=C
-LC_ALL=C
-result=$(echo "$str" | awk '
+# Note: the LANG=C and LC_ALL=C before the awk are there to make sure awk handles the text on a byte and not a codepoint level.
+# See also: https://bugs.freedesktop.org/show_bug.cgi?id=13139
+printf "%s" "$1" | to_utf8 | LANG=C LC_ALL=C awk '
     BEGIN {
         for ( i=1; i<=255; ++i ) ord [ sprintf ("%c", i) "" ] = i + 0
         e = ""
@@ -149,31 +155,28 @@ result=$(echo "$str" | awk '
     END {
         print e
     }
-')
-LANG="$ORIG_LANG"
-LC_ALL="$ORIG_LC_ALL"
+'
 }
 
 options=
 mailto=
 # attach is a comma separated list of url encoded filenames
 attach=
-utf8="iconv -t utf8"
+assume_utf8=""
 while [ $# -gt 0 ] ; do
     parm="$1"
     shift
 
     case "$parm" in
       --utf8)
-        utf8="cat"
+        assume_utf8="y"
         ;;
 
       --to)
         if [ -z "$1" ] ; then
             exit_failure_syntax "email address argument missing for --to"
         fi
-        url_encode "$1"
-        options="${options}to=${result}&"
+        options="${options}to=$( url_encode "$1" )&"
         shift
         ;;
 
@@ -181,8 +184,7 @@ while [ $# -gt 0 ] ; do
         if [ -z "$1" ] ; then
              exit_failure_syntax "email address argument missing for --cc"
         fi
-        url_encode "$1"
-        options="${options}cc=${result}&"
+        options="${options}cc=$( url_encode "$1" )&"
         shift
         ;;
 
@@ -190,8 +192,7 @@ while [ $# -gt 0 ] ; do
         if [ -z "$1" ] ; then
             exit_failure_syntax "email address argument missing for --bcc"
         fi
-        url_encode "$1"
-        options="${options}bcc=${result}&"
+        options="${options}bcc=$( url_encode "$1" )&"
         shift
         ;;
 
@@ -199,8 +200,7 @@ while [ $# -gt 0 ] ; do
         if [ -z "$1" ] ; then
             exit_failure_syntax "text argument missing for --subject option"
         fi
-        url_encode "$1"
-        options="${options}subject=${result}&"
+        options="${options}subject=$( url_encode "$1" )&"
         shift
         ;;
 
@@ -208,8 +208,7 @@ while [ $# -gt 0 ] ; do
         if [ -z "$1" ] ; then
             exit_failure_syntax "text argument missing for --body option"
         fi
-        url_encode "$1"
-        options="${options}body=${result}&"
+        options="${options}body=$( url_encode "$1" )&"
         shift
         ;;
 
@@ -223,8 +222,7 @@ while [ $# -gt 0 ] ; do
             exit_failure_file_missing "file '$1' does not exist"
         fi
 
-        url_encode "$file"
-        attach="${attach}${attach:+,}${result}"
+        attach="${attach}${attach:+,}$( url_encode "$file" )"
         shift
         ;;
 
@@ -237,11 +235,10 @@ while [ $# -gt 0 ] ; do
         ;;
 
       *@*)
-        url_encode "$parm"
         if [ -z "${mailto}" ] ; then
-            mailto="mailto:${result}?"
+            mailto="mailto:$( url_encode "$parm" )?"
         else
-            options="${options}to=${result}&"
+            options="${options}to=$( url_encode "$parm" )&"
         fi
         ;;
 
