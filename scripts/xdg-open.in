@@ -742,6 +742,30 @@ open_envvar()
     done
 }
 
+# Open a mailto: url using the MAILER variable.
+# The mailer variable is expected to be a colon seperated list of commands
+# tht fullfilled its purpose when they return with a 0 exit code.
+# Exits on success returns otherwise.
+# (mailto_url)
+open_using_mailer()
+{
+    old_ifs="$IFS"
+    IFS=:
+    for mailer in $MAILER; do
+	    IFS="$old_ifs"
+
+		if [ -z "$mailer" ] ; then
+			continue
+		fi
+
+	    eval "$mailer" '"$1"'
+
+	    if [ $? -eq 0 ]; then
+	        exit_success
+	    fi
+    done
+}
+
 # (url_or_path)
 open_wsl()
 {
@@ -800,6 +824,10 @@ open_generic()
     if has_display; then
         open_generic_xdg_x_scheme_handler "$1"
     fi
+
+	if printf "%s" "$1" | grep -q '^mailto:' ; then
+		open_using_mailer "$1"
+	fi
 
     if [ -n "$BROWSER" ]; then
         open_envvar "$1"
