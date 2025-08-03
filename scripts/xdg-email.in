@@ -84,174 +84,7 @@ run_thunderbird()
     fi
 }
 
-# (mailto, attach)
-open_kde()
-{
-    local kreadconfig profile client
-    if [ -n "$KDE_SESSION_VERSION" ] && [ "$KDE_SESSION_VERSION" -ge 5 ]; then
-        kreadconfig=kreadconfig$KDE_SESSION_VERSION
-    else
-        kreadconfig=kreadconfig
-    fi
-
-    if command -v "$kreadconfig" >/dev/null; then
-        profile="$("$kreadconfig" --file emaildefaults \
-                                     --group Defaults --key Profile)"
-        if [ -n "$profile" ]; then
-            client="$("$kreadconfig" --file emaildefaults \
-                                        --group "PROFILE_$profile" \
-                                        --key EmailClient \
-                                  | cut -d ' ' -f 1)"
-            if [ -n "$client" ] && [ -z "${client%%*.desktop}" ] && ! command -v "$client" >/dev/null 2>&1; then
-                client="$(desktop_file_to_binary "$client")"
-            fi
-
-            if echo "$client" | grep -Eq 'thunderbird|icedove'; then
-                run_thunderbird "$client" "$1" "$2"
-            fi
-        fi
-    fi
-
-    local command
-    case "$KDE_SESSION_VERSION" in
-        '') command=kmailservice ;;
-        4) command=kde-open ;;
-        *) command=kde-open$KDE_SESSION_VERSION ;;
-    esac
-
-    if command -v "$command" >/dev/null; then
-        DEBUG 1 "Running $command \"$1\""
-        if [ "$KDE_SESSION_VERSION" = 3 ]; then
-            # KDE3 uses locale's encoding when decoding the URI,
-            # so set it to UTF-8
-            LC_ALL=C.UTF-8 "$command" "$1"
-        else
-            "$command" "$1"
-        fi
-    else
-        DEBUG 1 "$command missing; trying generic mode instead."
-        open_generic "$1"
-    fi
-
-    if [ $? = 0 ]; then
-        exit_success
-    else
-        exit_failure_operation_failed
-    fi
-}
-
-# (mailto, attach)
-open_gnome3()
-{
-    local client
-    local desktop
-    desktop="$(xdg-mime query default "x-scheme-handler/mailto")"
-    client="$(desktop_file_to_binary "$desktop")"
-    case "$client" in *thunderbird*|*icedove*)
-        run_thunderbird "$client" "$1" "$2"
-    esac
-
-    if gio help open 2>/dev/null 1>&2; then
-        DEBUG 1 "Running gio open \"$1\""
-        gio open "$1"
-    elif gvfs-open --help 2>/dev/null 1>&2; then
-        DEBUG 1 "Running gvfs-open \"$1\""
-        gvfs-open "$1"
-    else
-        DEBUG 1 "Running gnome-open \"$1\""
-        gnome-open "$1"
-    fi
-
-    if [ $? -eq 0 ]; then
-        exit_success
-    else
-        exit_failure_operation_failed
-    fi
-}
-
-# (mailto, attach)
-open_gnome()
-{
-    local client
-    client="$(gconftool-2 --get /desktop/gnome/url-handlers/mailto/command | cut -d ' ' -f 1)"
-    case "$client" in *thunderbird*|*icedove*)
-        run_thunderbird "$client" "$1" "$2"
-    esac
-
-    if gio help open 2>/dev/null 1>&2; then
-        DEBUG 1 "Running gio open \"$1\""
-        gio open "$1"
-    elif gvfs-open --help 2>/dev/null 1>&2; then
-        DEBUG 1 "Running gvfs-open \"$1\""
-        gvfs-open "$1"
-    else
-        DEBUG 1 "Running gnome-open \"$1\""
-        gnome-open "$1"
-    fi
-
-    if [ $? -eq 0 ]; then
-        exit_success
-    else
-        exit_failure_operation_failed
-    fi
-}
-
-# (mailto, attach)
-open_lxqt()
-{
-    local client
-    local desktop
-    desktop="$(qtxdg-mat def-email-client 2>/dev/null)"
-    client="$(desktop_file_to_binary "$desktop")"
-    echo "$client" | grep -E 'thunderbird|icedove' > /dev/null 2>&1
-    if [ $? -eq 0 ] ; then
-        run_thunderbird "$client" "$1" "$2"
-    fi
-
-    if qtxdg-mat open --help 2>/dev/null 1>&2; then
-        qtxdg-mat open "$1"
-    else
-        exit_failure_operation_impossible "no method available for opening '$1'"
-    fi
-
-    if [ $? -eq 0 ]; then
-        exit_success
-    else
-        exit_failure_operation_failed
-    fi
-}
-
-
-open_xfce()
-{
-    DEBUG 1 "Running exo-open \"$1\""
-    exo-open "$1"
-
-    if [ $? -eq 0 ]; then
-        exit_success
-    else
-        exit_failure_operation_failed
-    fi
-}
-
-open_envvar()
-{
-    old_ifs="$IFS"
-    IFS=:
-    for i in $MAILER; do
-	    IFS="$old_ifs"
-
-	    eval "$i" '"$1"'
-
-	    if [ $? -eq 0 ]; then
-	        exit_success
-	    fi
-    done
-
-    exit_failure_operation_failed
-}
-
-open_gdbus()
+open_portal()
 {
     gdbus call --session \
         --dest org.freedesktop.portal.Desktop \
@@ -423,6 +256,7 @@ if [ -z "${mailto}" ] ; then
     mailto="mailto:?"
 fi
 
+# Merge mailto link with options from other CLI arguments
 case $mailto in
       *\?)
         mailto="${mailto}${options}"
@@ -441,7 +275,7 @@ esac
 mailto="$(echo "${mailto}"| sed 's/[?&]$//')"
 
 # Shouldn't happen
-[ x"${mailto}" != x"" ] || exit_failure_syntax
+[ -z "${mailto}" ] || exit_failure_syntax
 
 if command -v @NAME@-hook.sh > /dev/null; then
 	if [ -z "$attach" ] ; then
@@ -458,54 +292,15 @@ fi
 
 detectDE
 
-if [ x"$DE" = x"" ]; then
-    DE=generic
-fi
-
-if [ x"$MAILER" != x"" ]; then
-    DE=envvar
-fi
-
 case "$DE" in
-    envvar)
-	[ -z "$attach" ] || \
-		exit_failure_operation_impossible "Unable to use --attach with the MAILER envoirnment variable"
-    open_envvar "${mailto}"
-    ;;
+	flatpak|toolbx)
+		if [ -z "$attach" ] ; then
+			exit_failure_operation_impossible "Unable to use --attach from inside a $DE as support for the flatpak E-Mail portal has not been implemented in xdg-email yet. Contributions are welcome!"
+		fi
+		open_portal "${mailto}"
+		;;
 
-    kde)
-    open_kde "${mailto}" "$attach"
-    ;;
-
-    gnome)
-    open_gnome "${mailto}" "$attach"
-    ;;
-
-    gnome3|cinnamon|lxde|mate|deepin|budgie)
-    open_gnome3 "${mailto}" "$attach"
-    ;;
-
-    lxqt)
-    open_lxqt "${mailto}" "$attach"
-    ;;
-
-    xfce)
-	[ -z "$attach" ] || \
-		exit_failure_operation_impossible "Unable to use --attach with the Xfce opener"
-    open_xfce "${mailto}"
-    ;;
-
-    flatpak|toolbx)
-	[ -z "$attach" ] || \
-		exit_failure_operation_impossible "Unable to use --attach from inside a flatpak"
-    open_gdbus "${mailto}"
-    ;;
-
-    generic|enlightenment)
-    open_generic "${mailto}" "$attach"
-    ;;
-
-    *)
-    exit_failure_operation_impossible "no method available for opening '${mailto}'"
-    ;;
+	*)
+		open_generic "${mailto}" "$attach"
+		;;
 esac
