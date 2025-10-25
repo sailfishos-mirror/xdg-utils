@@ -81,6 +81,9 @@
       to a capable program (usually the defult handler for <code>mailto:</code> links.
     </para>
     <para>
+	  xdg-email uses <command>xdg-open</command> with a mailto URL in the background unless it is interacting with a portal (inside a container) or the <option>--attach</option> is specified.
+    </para>
+    <para>
       xdg-email is for use inside a desktop session only.
       It is not recommended to use xdg-email as root.
     </para>
@@ -153,7 +156,7 @@
             after xdg-email returns.
 	  </simpara>
 	  <simpara>
-         The attach option currently is only implemented for Thunderbird and Icedove on Gnome, Cinnamon, Lxde, Mate, Deepin, KDE, Lxqt and generic desktops with thunderbird as the mailclient or through a custom <command>xdg-email-hook.sh</command>. It will not work with the <envar>MAILER</envar> environment variable.
+         The attach option currently is only implemented for Thunderbird and Icedove on Gnome, Cinnamon, Lxde, Mate, Deepin, KDE, Lxqt and generic desktops with thunderbird as the mailclient or through a custom <command>xdg-email-hook.sh</command>. It will only work if xdg-email is able to directly resolve and call the opener itself.
 	  </simpara>
 	</listitem>
       </varlistentry>
@@ -206,15 +209,10 @@
 	<term><envar>MAILER</envar></term>
 	<listitem>
       <simpara>
-	      With this variable a custom command can be set as opener
-	      for <code>mailto:</code> links, when set it will be preferred
-	      over desktop specific behavior unless a <command>xdg-email-hook.sh</command> is present.
-      </simpara>
-	  <simpara>
-	      The set command will be run with the URI appended as the last argument.
+	      xdg-email directly handled this variable until version 1.2.1. It is now handled through <command>xdg-open</command> for all <code>mailto:</code> URLs.
       </simpara>
       <simpara>
-	      The <envar>MAILER</envar> is not standardized, keep the command as simple as possible.
+	      The semantics of this variable have changed with the move from an override to a fallback due to lack of standardization!
       </simpara>
 	</listitem>
       </varlistentry>

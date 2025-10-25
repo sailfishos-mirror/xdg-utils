@@ -191,6 +191,24 @@
 		    <para>When using <code>%s</code> as a placeholder the first instance of it will be replaced with the filepath or URL to be opened instead of appending it as the last argument.</para>
 	    </listitem>
       </varlistentry>
+      <varlistentry>
+	    <term><envar>MAILER</envar></term>
+	    <listitem>
+            <simpara>
+	            With this variable a custom command can be set as opener
+	            for <code>mailto:</code> links.
+            </simpara>
+            <simpara>
+	            Unlike in versions of xdg-utils before 1.2.1, it is treated as a fallback to desktop specific openers. Consider setting a handler for the <code>mailto</code> URI scheme instead.
+            </simpara>
+	        <simpara>
+	            The set command will be run with the URI appended as the last argument using <code>sh -c</code>.
+            </simpara>
+            <simpara>
+	            The <envar>MAILER</envar> is not standardized, keep the command as simple as possible.
+            </simpara>
+	    </listitem>
+      </varlistentry>
     </variablelist>
   </refsect1>
   
