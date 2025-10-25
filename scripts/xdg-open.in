@@ -758,7 +758,7 @@ open_using_mailer()
 			continue
 		fi
 
-	    eval "$mailer" '"$1"'
+	    sh -c "$mailer \"\$1\"" -- "$1"
 
 	    if [ $? -eq 0 ]; then
 	        exit_success
