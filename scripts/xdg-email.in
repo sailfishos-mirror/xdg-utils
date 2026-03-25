@@ -50,8 +50,8 @@ run_thunderbird()
     TO="$(printf "%s\n" "$MAILTO" | sed -n 's/^to=//p' | url_decode | sed "s/[,\']//g" | tr '\n' , )"
     CC="$(printf "%s\n" "$MAILTO" | sed -n 's/^cc=//p' | url_decode | sed "s/[,\']//g" | tr '\n' , )"
     BCC="$(printf "%s\n" "$MAILTO" | sed -n 's/^bcc=//p' | url_decode | sed "s/[,\']//g" | tr '\n' , )"
-    SUBJECT="$(printf "%s\n" "$MAILTO" | grep '^subject=' | tail -n 1)"
-    BODY="$(printf "%s\n" "$MAILTO" | grep '^body=' | tail -n 1)"
+    SUBJECT="$(printf "%s\n" "$MAILTO" | grep '^subject=' | tail -n 1 | sed -e 's/,/%2c/g' -e "s/\'/%27/g" -e 's/"/%22/g' )"
+    BODY="$(printf "%s\n" "$MAILTO" | grep '^body=' | tail -n 1 | sed -e 's/,/%2c/g' -e "s/\'/%27/g" -e 's/"/%22/g')" #' <- Fix confused syntax highlishting
 
     if [ -z "$TO" ] ; then
         NEWMAILTO=
