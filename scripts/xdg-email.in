@@ -271,8 +271,8 @@ esac
 # Strip trailing ? and &
 mailto="$(echo "${mailto}"| sed 's/[?&]$//')"
 
-# Shouldn't happen
-[ -z "${mailto}" ] || exit_failure_syntax
+# Either mailto is non-empty or we fail
+[ -n "${mailto}" ] || exit_failure_syntax
 
 if command -v @NAME@-hook.sh > /dev/null; then
 	if [ -z "$attach" ] ; then
