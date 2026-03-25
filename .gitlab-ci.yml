@@ -50,6 +50,7 @@ run-shellcheck:
   dependencies:
     - build
   script:
+    - sh scripts/shellcheck-xdg-util.sh scripts/xdg-email.in
     - sh scripts/shellcheck-xdg-util.sh scripts/xdg-open.in
     - sh scripts/shellcheck-xdg-util.sh scripts/xdg-realpath.in
 
