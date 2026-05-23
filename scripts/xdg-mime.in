@@ -747,7 +747,7 @@ fi
 if [ "$action" = "defapp" ]; then
     detectDE
 
-    if [ "$DE" = "kde" ] && [ "$KDE_SESSION_VERSION" -lt "6" ]; then
+    if [ "$DE" = "kde" ] && [ "$KDE_SESSION_VERSION" -lt 6 ]; then
         defapp_kde "$mimetype"
     fi
 
