@@ -35,6 +35,10 @@ Other required commands are:
 * `dbus-send` for interacting with with the DBus
 * `echo -e` for xdg-email
 * `mimetype` or `file` for xdg-mime
+* `hostname` or `uname -n` for xdg-open
+* `hostname` for xdg-screensaver
+* `ps -p` for xdg-screensaver
+
 
 ## Optional dependencies
 
@@ -105,6 +109,7 @@ for KDE 3:
 
 ### Deepin
 * `dde-open` (xdg-open optional)
+* `jq` (xdg-settings)
 
 ### Gnome 2
 
