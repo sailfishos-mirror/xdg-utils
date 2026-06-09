@@ -37,38 +37,40 @@ run_thunderbird()
     THUNDERBIRD="$1"
     MAILTO="$(echo "$2" | sed 's/^mailto://')"
     ATTACH="$3"
-    
-    echo "$MAILTO" | grep -qs "^?"
-    if [ "$?" = "0" ] ; then
+
+    if printf '%s' "$MAILTO" | grep -qs "^?" ; then
         MAILTO="$(echo "$MAILTO" | sed 's/^?//')"
     else
         MAILTO="$(echo "$MAILTO" | sed 's/^/to=/' | sed 's/?/\&/')"
     fi
 
-    MAILTO="$(echo "$MAILTO" | sed 's/&/\n/g')"
+    DEBUG 1 "Special case: Thunderbird style for $THUNDERBIRD using '$MAILTO'"
+
+    MAILTO="$(echo "$MAILTO" | tr '&' '\n' )"
     # This will not handle E-Mail adresses that contain , or ' very well, but at least it won't turn them into an injection attack.
-    TO="$(printf "%s\n" "$MAILTO" | sed -n 's/^to=//p' | url_decode | sed "s/[,\']//g" | tr '\n' , )"
-    CC="$(printf "%s\n" "$MAILTO" | sed -n 's/^cc=//p' | url_decode | sed "s/[,\']//g" | tr '\n' , )"
-    BCC="$(printf "%s\n" "$MAILTO" | sed -n 's/^bcc=//p' | url_decode | sed "s/[,\']//g" | tr '\n' , )"
-    SUBJECT="$(printf "%s\n" "$MAILTO" | grep '^subject=' | tail -n 1 | sed -e 's/,/%2c/g' -e "s/\'/%27/g" -e 's/"/%22/g' )"
-    BODY="$(printf "%s\n" "$MAILTO" | grep '^body=' | tail -n 1 | sed -e 's/,/%2c/g' -e "s/\'/%27/g" -e 's/"/%22/g')" #' <- Fix confused syntax highlishting
+    TO="$(printf "%s\n" "$MAILTO" | sed -n 's/^to=//p' | encode_thunderbird_argument_value_list )"
+    CC="$(printf "%s\n" "$MAILTO" | sed -n 's/^cc=//p' | encode_thunderbird_argument_value_list )"
+    BCC="$(printf "%s\n" "$MAILTO" | sed -n 's/^bcc=//p' | encode_thunderbird_argument_value_list )"
+    # The long sed commands ensure that the important things get URL-encoded in strings that should already be URL-encoded
+    SUBJECT="$(printf "%s\n" "$MAILTO" | sed -n 's/^subject=//p' | tail -n 1 | sed -e 's/,/%2c/g' -e 's/\o047/%27/g' -e 's/\o042/%22/g')"
+    BODY="$(printf "%s\n" "$MAILTO" | sed -n 's/^body=//p' | tail -n 1 | sed -e 's/,/%2c/g' -e 's/\o047/%27/g' -e 's/\o042/%22/g' )"
 
     if [ -z "$TO" ] ; then
         NEWMAILTO=
     else
-        NEWMAILTO="to='$TO'"
+        NEWMAILTO="to=\"$TO\""
     fi
     if [ -n "$CC" ] ; then
-        NEWMAILTO="${NEWMAILTO},cc='$CC'"
+        NEWMAILTO="${NEWMAILTO},cc=\"$CC\""
     fi
     if [ -n "$BCC" ] ; then
-        NEWMAILTO="${NEWMAILTO},bcc='$BCC'"
+        NEWMAILTO="${NEWMAILTO},bcc=\"$BCC\""
     fi
     if [ -n "$SUBJECT" ] ; then
-        NEWMAILTO="${NEWMAILTO},$SUBJECT"
+        NEWMAILTO="${NEWMAILTO},subject=$SUBJECT"
     fi
     if [ -n "$BODY" ] ; then
-        NEWMAILTO="${NEWMAILTO},$BODY"
+        NEWMAILTO="${NEWMAILTO},body=$BODY"
     fi
 
     if [ -n "$ATTACH" ] ; then
@@ -131,11 +133,19 @@ to_utf8()
 # Multiple places rely on this encoding commata (,) and not encoding slashes (/)
 # 
 #(text)
-url_encode()
-{
+url_encode() {
+	printf "%s" "$1" | to_utf8 | raw_url_encode
+}
+
+# URL encode text from stdin to stdout, assumes UTF-8 encoding
+#
+# Multiple places rely on this encoding commata (,) and not encoding slashes (/)
+#
+# ()
+raw_url_encode() {
 # Note: the LANG=C and LC_ALL=C before the awk are there to make sure awk handles the text on a byte and not a codepoint level.
 # See also: https://bugs.freedesktop.org/show_bug.cgi?id=13139
-printf "%s" "$1" | to_utf8 | LANG=C LC_ALL=C awk '
+LANG=C LC_ALL=C awk '
     BEGIN {
         for ( i=1; i<=255; ++i ) ord [ sprintf ("%c", i) "" ] = i + 0
         e = ""
@@ -162,51 +172,23 @@ printf "%s" "$1" | to_utf8 | LANG=C LC_ALL=C awk '
 '
 }
 
-# from https://github.com/stroborobo/werc/blob/master/bin/contrib/urldecode.awk
-# in public domain
+# Receives inputs as one input per line an encodes them as an argument list.
 #
-# Works as a filter, echo "foo%2cbar" | url_decode # outputs foo,bar
+# Works as a filter
 # ()
-url_decode() {
-    awk 'BEGIN {
-    hextab ["0"] = 0; hextab ["8"] = 8;
-    hextab ["1"] = 1; hextab ["9"] = 9;
-    hextab ["2"] = 2; hextab ["A"] = hextab ["a"] = 10
-    hextab ["3"] = 3; hextab ["B"] = hextab ["b"] = 11;
-    hextab ["4"] = 4; hextab ["C"] = hextab ["c"] = 12;
-    hextab ["5"] = 5; hextab ["D"] = hextab ["d"] = 13;
-    hextab ["6"] = 6; hextab ["E"] = hextab ["e"] = 14;
-    hextab ["7"] = 7; hextab ["F"] = hextab ["f"] = 15;
-  }
-  {
-    decoded = ""
-    i   = 1
-    len = length ($0)
-    while ( i <= len ) {
-      c = substr ($0, i, 1)
-      if ( c == "%" ) {
-        if ( i+2 <= len ) {
-          c1 = substr ($0, i+1, 1)
-          c2 = substr ($0, i+2, 1)
-          if ( hextab [c1] == "" || hextab [c2] == "" ) {
-            print "WARNING: invalid hex encoding: %" c1 c2 | "cat >&2"
-          } else {
-            code = 0 + hextab [c1] * 16 + hextab [c2] + 0
-            c = sprintf ("%c", code)
-            i = i + 2
-          }
-        } else {
-          print "WARNING: invalid % encoding: " substr ($0, i, len - i)
-        }
-      } else if ( c == "+" ) {
-        c = " "
-      }
-      decoded = decoded c
-      ++i
-    }
-    print decoded
-  }
-  '
+encode_thunderbird_argument_value_list() {
+	while read -r LINE ; do
+		printf '%s' "$LINE" | raw_url_encode
+	done | awk '
+	{
+		print "*" $0 > "/dev/stderr"
+		if (not_first) {
+			printf ","
+		} else {
+			not_first = 1
+		}
+		printf("%s", $0)
+	}'
 }
 
 
