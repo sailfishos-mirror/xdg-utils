@@ -110,7 +110,7 @@ open_generic()
     local desktop
     desktop="$(xdg-mime query default "x-scheme-handler/mailto")"
     client="$(desktop_file_to_binary "$desktop")"
-    case "$client" in *thunderbird*|*icedove*)
+    case "$client" in *thunderbird*|*icedove*|*betterbird*)
         run_thunderbird "$client" "$1" "$2"
     esac
 
