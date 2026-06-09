@@ -35,8 +35,7 @@ Other required commands are:
 * `dbus-send` for interacting with with the DBus
 * `echo -e` for xdg-email
 * `mimetype` or `file` for xdg-mime
-* `hostname` or `uname -n` for xdg-open
-* `hostname` for xdg-screensaver
+* `uname -n` for xdg-open and xdg-screensaver
 * `ps -p` for xdg-screensaver
 
 
@@ -198,3 +197,7 @@ When writing `awk` code, which should be the preferred language if more advanced
 See:
 * [The POSIX awk documentation](https://pubs.opengroup.org/onlinepubs/9799919799/)
 * [the mawk documentation](https://invisible-island.net/mawk/manpage/mawk.html)
+
+## Hostname
+
+Please query the hostname using `uname -n`, it is part of the POSIX standard and often doesn't require extra dependencies when packaging (`hostname` isn't always present).

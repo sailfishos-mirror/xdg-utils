@@ -36,7 +36,7 @@ else
    # No secure moves available, use home dir
    DEBUG 1 "mv -T not available"
    MV="mv"
-   screensaver_file="$HOME/.xdg-screensaver-"`echo "$(hostname)"-$DISPLAY | sed 's/:/-/g'`
+   screensaver_file="$HOME/.xdg-screensaver-"`echo "$(uname -n)"-$DISPLAY | sed 's/:/-/g'`
 fi
 lockfile_command=`command -v lockfile`
 
