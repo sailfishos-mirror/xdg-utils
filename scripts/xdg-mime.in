@@ -372,7 +372,7 @@ make_default_generic()
 }
 
 # Search for desktop files that mention (support?) a given mimetype.
-# Prints a newline seperated list of matching files.
+# Prints a newline separated list of matching files.
 # (mimtype, in_directory)
 search_desktop_file()
 {

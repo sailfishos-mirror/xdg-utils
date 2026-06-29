@@ -323,7 +323,7 @@ LC_ALL="$ORIG_LC_ALL"
 
 options=
 mailto=
-# attach is a comma seperated list of url encoded filenames
+# attach is a comma separated list of url encoded filenames
 attach=
 utf8="iconv -t utf8"
 while [ $# -gt 0 ] ; do

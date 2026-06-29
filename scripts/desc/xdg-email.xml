@@ -233,7 +233,7 @@
     <para>
       If an attachment is specified it will be called
       with an additional <option>--attach-files</option> option
-      followed by a list of one or more URI-encoded, comma seperated filepaths.
+      followed by a list of one or more URI-encoded, comma separated filepaths.
       (This is compatible with the <command>thunderbird</command> <option>-compose</option> option)
     </para>
     <para>
