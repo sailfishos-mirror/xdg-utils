@@ -800,6 +800,27 @@ set_url_scheme_handler_kde()
 }
 
 # }}} KDE
+# {{{ Deepin
+
+# (scheme)
+get_url_scheme_handler_deepin()
+{
+	get_url_scheme_handler_generic "$@"
+}
+
+# (scheme, desktop_file_name)
+check_url_scheme_handler_deepin()
+{
+	check_url_scheme_handler_generic "$@"
+}
+
+# (scheme, desktop_file_name)
+set_url_scheme_handler_deepin()
+{
+	set_url_scheme_handler_generic "$@"
+}
+
+# }}} Deepin
 # {{{ GNOME
 
 # (scheme)
