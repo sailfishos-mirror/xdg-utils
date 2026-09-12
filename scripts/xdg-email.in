@@ -127,6 +127,9 @@ to_utf8()
 }
 
 # URL encodes the given text to stdout
+#
+# Multiple places rely on this encoding commata (,) and not encoding slashes (/)
+# 
 #(text)
 url_encode()
 {
@@ -209,7 +212,7 @@ url_decode() {
 
 options=
 mailto=
-# attach is a comma separated list of url encoded filenames
+# attach is a comma separated list of file URIs
 attach=
 assume_utf8=""
 while [ $# -gt 0 ] ; do
@@ -271,7 +274,7 @@ while [ $# -gt 0 ] ; do
             exit_failure_file_missing "file '$1' does not exist"
         fi
 
-        attach="${attach}${attach:+,}$( url_encode "$file" )"
+        attach="${attach}${attach:+,}file://$( url_encode "$file" )"
         shift
         ;;
 

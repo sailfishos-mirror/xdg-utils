@@ -231,12 +231,12 @@
     <para>
       If an attachment is specified it will be called
       with an additional <option>--attach-files</option> option
-      followed by a list of one or more URI-encoded, comma separated filepaths.
+      followed by a list of one or more comma separated file:// URIs without a hostname.
       (This is compatible with the <command>thunderbird</command> <option>-compose</option> option)
     </para>
     <para>
       Like this: <command>xdg-email-hook.sh</command> <replaceable>mailto_URL</replaceable>
-      <option>--attach-files</option> <replaceable>file-list</replaceable>
+      <option>--attach-files</option> <replaceable>file-uri-list</replaceable>
     </para>
   </refsect1>
   <refsect1 id="exitcodes">
