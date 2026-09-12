@@ -146,7 +146,11 @@ info_generic()
         mimetype --brief --dereference "$1"
     else
         DEBUG 1 "Running file --brief --dereference --mime-type \"$1\""
-        /usr/bin/file --brief --dereference --mime-type "$1" 2> /dev/null
+        if [ -x /usr/bin/file ] ; then
+            /usr/bin/file --brief --dereference --mime-type "$1" 2> /dev/null
+        else
+           file --brief --dereference --mime-type "$1" 2> /dev/null
+        fi
     fi
 
     if [ $? -eq 0 ]; then
