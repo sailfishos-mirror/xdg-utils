@@ -77,7 +77,7 @@ fi
 
 # Start trying to launch terminals
 
-if [ -z "$FORCE_NEW_TERMINAL" ] && test -t 0 && test -t 1 ; then
+if [ -z "$FORCE_NEW_TERMINAL" ] && test -t 1 ; then
 	DEBUG 1 "We already are on a terminal, executing command directly."
 	"$@"
 	exit $?
