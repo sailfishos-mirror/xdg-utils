@@ -529,7 +529,11 @@ END {
 	eargc = 0;
 	if (term_value == "true") {
 		expanded_args[0] = "xdg-terminal";
-		eargc = 1;
+		expanded_args[1] = "--allow-terminal-reuse";
+		expanded_args[2] = "--title=" name_value;
+		expanded_args[3] = "--app-id=" app_id;
+		expanded_args[4] = "--";
+		eargc = 5;
 	}
 	found_file_field_codes = 0;
 	for (i=0; args[i]; i++) {
@@ -621,12 +625,14 @@ END {
 AWKEOF
 )"
 
+#'
+#"
 
 # (desktop_file, file, uri (optional))
 open_with_desktop_file()
 {
 	# shellcheck disable=SC2016 # Not expanding is intended here
-	awk -v"hostname=$(uname -n)" -v"file_arg=$2" -v"uri_arg=$3" "$awk_script_open_with_desktop_file" < "$1" | xargs -0 -x sh -c 'if [ "$1" = "cmd" ] ; then shift; exec "$@" ; else exit 4 ; fi' -
+	awk -v"hostname=$(uname -n)" -v"app_id=$(printf %s "$1" | sed -e 's/\.desktop$//' -e 's|^/.*/||' )" -v"file_arg=$2" -v"uri_arg=$3" "$awk_script_open_with_desktop_file" < "$1" | xargs -0 -x sh -c 'if [ "$1" = "cmd" ] ; then shift; exec "$@" ; else exit 4 ; fi' -
 	if [ "$?" -eq 123 ] ; then
 		exit_failure_operation_failed
 	fi
