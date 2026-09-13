@@ -1,3 +1,30 @@
+Release Notes for xdg-utils 1.3.0
+=================================
+
+Breaking changes:
+* Support for the MAILER variable moved to xdg-open and is now a fallback.
+* The hook-xdg-email.sh script now receives a list of file:// URIs for the
+  attachments instead of a list of URI encoded filepaths.
+
+Important for distributions:
+* Make sure to package xdg-terminal!
+* Please make sure Thunderbird 151 is packaged when stablizing (see Dependencies.md)
+* Please cross check your dependencies with Dependencies.md
+* Please submit your patches as Merge Requests where applicable
+
+Changes:
+* Improved support for Deepin, Xfce4 and GNOME3
+* Added support for Budgie and toolbx
+* Made parsing of XDG_CURRENT_DESKTOP specification compliant
+* Added integration for betterbird with xdg-email
+* Added support for xss-lock to xdg-screensaver
+* Multiple imporvements for xdg-screensaver
+* Added support for Terminal=true
+* Allow using -- with xdg-open
+* Improved .desktop file parsing for xdg-open
+* Added support for SVG icons in xdg-icon-resource
+* See also the "Update Changelog" file
+
 Release notes for xdg-utils 1.2.1
 =================================
 
