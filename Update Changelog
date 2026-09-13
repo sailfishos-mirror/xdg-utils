@@ -1,25 +1,48 @@
 === xdg-utils NOT YET RELEASED ===
 
+2026-09-13 Slatian
+  * xdg-email, xdg-open: Restructure with breaking changes,
+    moved MAILER as fallback to xdg-open,
+    hook-xdg-email.sh now receives a list of file:// URIs for the attachments
+    improve support for thunderbird add support for betterbird.
+    Required thunderbird 151+ for a bugfix.
+	Additional Thanks to Matěj Cepl, eylles, uriel and inawhilecrocodile.
+    (#149, #262, #205, #299, !153)
+  * all: Use uname -n (POSIX) instead of the hostname command.
+
+2026-09-12 Slatian
+  * xdg-mime: Fall back to file when /usr/bin/file is not executable (#302, !173)
+
+2026-09-12 rewine
+  * xdg-settings: Fix missing url settings handlers for Deepin (!172)
+
+2026-09-12 Nikolas Nyby
+  * all: Fix typos (!170)
+
+2026-03-27 Tristan Miller
+  * xdg-open: Replace an echo with DEBUG (#297, !166)
+
 2026-03-26 Simon Lees
-  * all: Use docbook V4.3 (#295)
+  * all: Use docbook V4.3 (#295, !164)
 
 2026-03-26 Callum Farmer
-  * all: Initial support for Budgie Desktop 
+  * all: Initial support for Budgie Desktop (!161)
 
 2026-03-26 eylles
-  * xdg-terminal: handle Terminal=true
+  * xdg-open: handle Terminal=true (!160)
 
 2026-03-26 Slatian
-  * xdg-settings: improve manpage
+  * xdg-settings: improve manpage (!159)
+  * xdg-settings: set-default-url-handler for xfce4 (!158)
 
-2026-03-26 Slatian
-  * xdg-settings: set-default-url-handler for xfce4 
+2025-10-25 Tobias Bengfort
+  * all: update flatpak-info location to use XDG_RUNTIME_DIR (!156)
 
 2025-08-23 Slatian
-  * xdg-open: Allow use of --
+  * xdg-open: Allow use of -- (!135)
 
 2025-10-15 Ian Wienand
-  * xdg-open: support toolbx
+  * xdg-open: support toolbx (!157)
 
 2025-08-23 Slatian
   * xdg-open: Reimplement the .desktop file handling of the generic opener in awk (!147)

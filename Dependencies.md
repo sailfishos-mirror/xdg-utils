@@ -68,6 +68,11 @@ DBus Services:
 ### Windows Cygwin
 * `cygstart` (xdg-open)
 
+### Thunderbird
+
+Thunderbird version 151 or later (or Betterbird equivalent) is required for the integration with `xdg-email` to work without issues.
+See [Thunderbird Bug #1980843](https://bugzilla.mozilla.org/show_bug.cgi?id=1980843).
+
 ### KDE
 
 for KDE 6:
