@@ -8,11 +8,14 @@
   <refentryinfo>
     <title>xdg-terminal Manual</title>
     <copyright>
-      <year>2006</year>
+      <year>2026</year>
     </copyright>
     <author>
       <firstname>Kevin</firstname>
       <surname>Krammer</surname>
+    </author>
+    <author>
+      <firstname>Slatian</firstname>
     </author>
     <address><email>kevin.krammer@gmx.at</email></address>
     <releaseinfo>xdg-terminal Technology Preview</releaseinfo>
@@ -31,7 +34,12 @@
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>xdg-terminal</command>
-        <arg choice="opt"><option><replaceable>command</replaceable></option></arg>
+      	<arg choice="opt"><option>--allow-terminal-reuse</option></arg>
+      	<arg choice="opt"><option>--title=<replaceable>title</replaceable></option></arg>
+      	<arg choice="opt"><option>--app-id=<replaceable>application id</replaceable></option></arg>
+      	<arg choice="opt"><option>--</option></arg>
+        <arg choice="opt"><replaceable>command</replaceable><arg choice="opt" rep="repeat"><replaceable>args</replaceable></arg></arg>
+        
     </cmdsynopsis>
     <cmdsynopsis>
       <command>xdg-terminal</command>
@@ -49,6 +57,9 @@
       xdg-terminal opens the user's preferred terminal emulator application.
       If a command is provided the command will be executed by the shell within
       the newly opened terminal window.
+    </para>
+    <para>
+	  If <command>xdg-terminal-exec</command> is installed the terminal will be chosed by it. Otherwise <command>xdg-terminal</command> will try to extract a desktop preference or use a sensible default before falling back to <command>foot</command> or <command>xterm</command>.
     </para>
     <para>
       xdg-terminal is for use inside a desktop session only.
@@ -81,6 +92,33 @@
         <listitem>
           <simpara>
             Show the xdg-utils version information.
+          </simpara>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term><option>--allow-terminal-reuse</option></term>
+        <listitem>
+          <simpara>
+            If already inside a terminal use that terminal instead of opening a new one. This is used by <command>xdg-open</command>.
+          </simpara>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term><option>--title=<replaceable>title</replaceable></option></term>
+        <listitem>
+          <simpara>
+	        Set the title of the terminal. Gets ignored when empty or not supported.
+          </simpara>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--app-id=<replaceable>application id</replaceable></option></term>
+        <listitem>
+          <simpara>
+	        Set the application id (or in some cases the X11 window class) of the terminal window. Gets ignored when empty or not supported.
           </simpara>
         </listitem>
       </varlistentry>
@@ -126,6 +164,14 @@
         <manvolnum>7</manvolnum>
       </citerefentry>
     </para>
+    <para><citerefentry><refentrytitle>xdg-terminal-exec</refentrytitle>
+        <manvolnum>7</manvolnum>
+      </citerefentry>
+    </para>
+    <para><citerefentry><refentrytitle>xdg-utils-common</refentrytitle>
+        <manvolnum>7</manvolnum>
+      </citerefentry>
+    </para>
   </refsect1>
   
   <refsect1 id="examples">
@@ -138,9 +184,15 @@ xdg-terminal
     </para>
     <para>
 <programlisting>
-xdg-terminal top
+xdg-terminal -- top
 </programlisting>
       Opens the user's default terminal emulator and lets it run the top executable.
+    </para>
+    <para>
+<programlisting>
+xdg-terminal --app-id htop --title Htop -- htop
+</programlisting>
+      Opens htop in a new terminal similar to how an application starter would have configured it. Note: New application ids should follow the reverse domain notation, for example <code>org.example.appname</code>.
     </para>
   </refsect1>
 </refentry>
