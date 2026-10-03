@@ -74,6 +74,9 @@
 		  <listitem><para>Prefix known relative filepaths with a <quote>./</quote>. For example using <code>sed -E 's|^[^/]|./\0|'</code>.</para></listitem>
 		  <listitem><para>Pass a file URL.</para></listitem>
 	  </itemizedlist>
+	<para>
+		When opening an application inside a terminal <command>xdg-terminal</command> will be used to handle the terminal part.
+	</para>
   </refsect1>
   <refsect1 id="options">
     <title>Options</title>
@@ -239,6 +242,9 @@
         <manvolnum>1</manvolnum>
       </citerefentry>,
       <citerefentry><refentrytitle>xdg-realpath</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry><refentrytitle>xdg-terminal</refentrytitle>
         <manvolnum>1</manvolnum>
       </citerefentry>,
       <citerefentry><refentrytitle>xdg-utils-common</refentrytitle>
