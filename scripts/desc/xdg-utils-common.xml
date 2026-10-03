@@ -110,6 +110,14 @@
 				</citerefentry>
 				</simpara>
 			</listitem>
+			<listitem>
+				<simpara>
+				<citerefentry>
+					<refentrytitle>xdg-terminal</refentrytitle>
+					<manvolnum>1</manvolnum>
+				</citerefentry>
+				</simpara>
+			</listitem>
 		</itemizedlist>
 		<para>
 			This manual describes mechanisms that are shared across all or multiple of the xdg-utils.
