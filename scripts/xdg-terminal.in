@@ -131,6 +131,35 @@ try_terminal() {
 }
 
 #( cmd... )
+terminal_kde()
+{
+	if [ -n "$KDE_SESSION_VERSION" ] && [ "$KDE_SESSION_VERSION" -ge 5 ]; then
+		kreadconfig="kreadconfig$KDE_SESSION_VERSION"
+	else
+		kreadconfig="kreadconfig"
+	fi
+
+	TRY_TERMINAL_CMD="konsole"
+	TRY_TERMINAL_EXEC_ARG="-e"
+	if command -v "$kreadconfig" >/dev/null 2>/dev/null; then
+		TRY_TERMINAL_CMD="$($kreadconfig --file kdeglobals \
+			--group General \
+			--key TerminalApplication \
+			--default konsole)"
+	else
+		DEBUG 0 "Unable to find a kreadconfig command, checked for '$kreadconfig', falling back to konsole."
+	fi
+
+	TRY_TERMINAL_CMD="$(command -v "$TRY_TERMINAL_CMD")"
+
+	if [ -x "$TRY_TERMINAL_CMD" ] ; then
+		DEBUG 1 "Found KDE terminal, trying it ..."
+		try_terminal "$@"
+	fi
+}
+
+
+#( cmd... )
 terminal_xfce() {
 	DEBUG 1 "Trying xfce-open ..."
 	if command -v "xfce-open" >/dev/null 2>/dev/null ; then
@@ -159,8 +188,7 @@ detectDE
 
 case "$DE" in
 	kde)
-		TRY_TERMINAL_CMD="konsole"
-		try_terminal "$@"
+		terminal_kde "$@"
 		;;
 	gnome3|budgie)
 		terminal_gsettings org.gnome.desktop.default-applications.terminal "$@"
