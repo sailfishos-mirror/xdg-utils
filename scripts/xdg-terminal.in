@@ -81,7 +81,7 @@ if [ -z "$FORCE_NEW_TERMINAL" ] && test -t 1 ; then
 	DEBUG 1 "We already are on a terminal, executing command directly."
 	"$@"
 	exit $?
-elif command -v xdg-terminal-exe >/dev/null 2>/dev/null ; then
+elif command -v xdg-terminal-exec >/dev/null 2>/dev/null ; then
 	DEBUG 1 "Using xdg-terminal-exec"
 	case "$FLAGS" in
 		t)
@@ -149,7 +149,7 @@ terminal_gsettings() {
 
 	TRY_TERMINAL_CMD="$(command -v "$term_exec")"
 
-	if [ -x "$TRY_TERMINAL_EXEC_ARG" ] ; then
+	if [ -x "$TRY_TERMINAL_CMD" ] ; then
 		DEBUG 1 "Found gsettings terminal, trying it ..."
 		try_terminal "$@"
 	fi
