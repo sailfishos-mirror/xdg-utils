@@ -12,6 +12,7 @@ This document aims to guide package maintainers and developers through the depen
 * `xdg-open` last evaluated at `0f6385262`
 * `xdg-screensaver` last evaluated at `0f6385262`
 * `xdg-settings` last evaluated at `0f6385262`
+* `xdg-terminal` last evaluated at `0eb218138`
 
 ## Build dependencies
 
@@ -49,6 +50,7 @@ Other required commands are:
 * `update-mime-database` (xdg-mime)
 * `xautolock` (xdg-screensaver)
 * `xdg-user-dir` (xdg-desktop-icon)
+* `xdg-terminal-exec` (xdg-terminal)
 
 DBus Services:
 * `org.freedesktop.ScreenSaver` (xdg-screensaver)
@@ -73,13 +75,25 @@ DBus Services:
 Thunderbird version 151 or later (or Betterbird equivalent) is required for the integration with `xdg-email` to work without issues.
 See [Thunderbird Bug #1980843](https://bugzilla.mozilla.org/show_bug.cgi?id=1980843).
 
+### Terminals
+
+If `xdg-terminal-exec` is installed `xdg-terminal` will delegate the teminal choosing to it.
+
+`xdg-terminal` expects one of the following to be present in absence od an explicitly configured terminal:
+* `xterm` (on X11)
+* `foot` (on Wayland)
+
+### Budgie
+
+* `gsettings` (xdg-terminal optinal)
+
 ### KDE
 
 for KDE 6:
 * `kbuildsycoca6` (xdg-mime)
 * `kde-open` (xdg-open)
 * `kmimetypefinder` (xdg-mime)
-* `kreadconfig6` (xdg-settings, xdg-email)
+* `kreadconfig6` (xdg-settings, xdg-email, xdg-terminal)
 * `kwriteconfig6` (xdg-settings)
 * `qtpaths` will be removed with !120 (xdg-mime)
 
@@ -87,7 +101,7 @@ for KDE 5:
 * `kbuildsycoca5` (xdg-mime)
 * `kde-open5` (xdg-open, xdg-email)
 * `kmimetypefinder5` (xdg-mime)
-* `kreadconfig5` (xdg-settings, xdg-email)
+* `kreadconfig5` (xdg-settings, xdg-email, xdg-terminal)
 * `ktraderclient5` (xdg-mime)
 * `kwriteconfig5` (xdg-settings)
 * `qtpaths` (xdg-mime, will be removed with !120)
@@ -97,7 +111,7 @@ for KDE 4:
 * `kde4-config` (xdg-mime, xdg-settings, xdg-icon-resource, xdg-desktop-icon)
 * `kde-open` (xdg-open, xdg-email)
 * `kmimetypefinder` (xdg-mime)
-* `kreadconfig` (xdg-settings, xdg-email)
+* `kreadconfig` (xdg-settings, xdg-email, xdg-terminal)
 * `ktraderclient` (xdg-mime)
 * `kwriteconfig` (xdg-settings)
 
@@ -110,6 +124,8 @@ for KDE 3:
 * `kreadconfig` (xdg-settings, xdg-email)
 * `ktradertest` (xdg-mime, xdg-settings)
 * `kwriteconfig` (xdg-settings)
+
+For all KDE versions `konsole` is the fallback terminal for `xdg-terminal`.
 
 ### Deepin
 * `dde-open` (xdg-open optional)
@@ -132,12 +148,14 @@ Required DBus Services:
 * `gio` (xdg-open optional)
 * `gnome-open` (xdg-open optional)
 * `gnomevfs-info` (xdg-mime optional)
+* `gsettings` (xdg-terminal optinal)
 * `gvfs-info` (xdg-mime optional)
 * `gvfs-open` (xdg-open optional)
 
 ### Mate
 
 * `gio` (xdg-open optional)
+* `gsettings` (xdg-terminal optinal)
 * `gvfs-open` (xdg-open optional)
 * `mate-open` (xdg-open optional)
 * `mate-screensaver-command` (xdg-screensaver)
@@ -147,22 +165,31 @@ Required DBus Services:
 
 # Cinnamon
 
+* `gsettings` (xdg-terminal optinal)
+
 Required DBus Services:
 * `org.cinnamon.ScreenSaver` (xdg-screensaver)
 
 ### Xfce
 
+* `xfce-open` (xdg-open optional, xdg-terminal optional)
 * `exo-open` (xdg-open optional)
 * `gio` (xdg-open optional)
 * `gvfs-open` (xdg-open optional)
 
+### Lxde
+
+* `lxterminal` (xdg-terminal)
+
 ### Lxqt
 
 * `qtxdg-mat` (xdg-mime, xdg-settings)
+* `qterminal` (xdg-terminal)
 
 ### Enlightenment
 
 * `enlightenment_open` (xdg-open optional)
+* `terminology` (xdg-terminal)
 
 ### Flatpak
 
