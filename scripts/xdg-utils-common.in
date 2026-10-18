@@ -307,7 +307,7 @@ check_common_commands()
             ;;
 
             --version)
-            echo "@NAME@ 1.2.99"
+            echo "@NAME@ 1.3.0-rc.1"
             exit_success
             ;;
 
