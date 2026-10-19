@@ -18,7 +18,7 @@ Changes:
 * Made parsing of XDG_CURRENT_DESKTOP specification compliant
 * Added integration for betterbird with xdg-email
 * Added support for xss-lock to xdg-screensaver
-* Multiple imporvements for xdg-screensaver
+* Multiple improvements for xdg-screensaver
 * Added support for Terminal=true
 * Allow using -- with xdg-open
 * Improved .desktop file parsing for xdg-open
