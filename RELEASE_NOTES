@@ -8,7 +8,7 @@ Breaking changes:
 
 Important for distributions:
 * Make sure to package xdg-terminal!
-* Please make sure Thunderbird 151 is packaged when stablizing (see Dependencies.md)
+* Please make sure Thunderbird 151 is packaged when stabilizing (see Dependencies.md)
 * Please cross check your dependencies with Dependencies.md
 * Please submit your patches as Merge Requests where applicable
 
