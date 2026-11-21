@@ -66,6 +66,7 @@ DBus Services:
 ### Windows WSL
 * `explorer.exe` (Detecting WSL, xdg-open)
 * `rundll32.exe url.dll,FileProtocolHandler`
+* `wslpath` (xdg-open)
 
 ### Windows Cygwin
 * `cygstart` (xdg-open)
